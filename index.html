@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101410">
+  <title>Open Wasm Lab</title>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      padding: calc(24px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));
+      background: #101410;
+      color: #f4f7ec;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { max-width: 420px; margin: 0 auto; }
+    h1 { font-size: 32px; letter-spacing: -0.04em; margin: 0 0 12px; }
+    p { color: #c5d0c2; line-height: 1.45; }
+    button {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      min-height: 52px;
+      border: 0;
+      border-radius: 14px;
+      background: #d6f25c;
+      color: #1a2408;
+      font: inherit;
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .err { color: #ffb0a4; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Open Wasm Lab</h1>
+    <p>The Files app preview cannot run this page. Choose the <b>wasm-lab.html</b> file you already saved, and it will open here in Safari.</p>
+    <button type="button" id="pick">Choose wasm-lab.html</button>
+    <p id="status"></p>
+  </main>
+  <input id="file" type="file" accept=".html,.htm,text/html" hidden>
+  <script>
+    const pick = document.getElementById("pick");
+    const file = document.getElementById("file");
+    const status = document.getElementById("status");
+    pick.addEventListener("click", () => file.click());
+    file.addEventListener("change", async () => {
+      const chosen = file.files && file.files[0];
+      if (!chosen) return;
+      status.className = "";
+      status.textContent = "Opening " + chosen.name + "…";
+      try {
+        const html = await chosen.text();
+        if (!html.includes("WASM_LAB") && !html.includes("<html")) {
+          throw new Error("That file does not look like the Wasm Lab page.");
+        }
+        document.open();
+        document.write(html);
+        document.close();
+      } catch (error) {
+        status.className = "err";
+        status.textContent = error && error.message ? error.message : "Could not open that file.";
+      }
+    });
+  </script>
+</body>
+</html>
